@@ -1,5 +1,7 @@
 import os
 
+# Config class which stores all the design variables that might change in the future if the admin decides to update the specification
+# or needs to change something that has to be persisted through the entire database. 
 class Config(object):
 	SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 

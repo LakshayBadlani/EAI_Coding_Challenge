@@ -4,6 +4,8 @@ from app import app, validator, elasticsearch_helper, logic_handler
 from config import Config
 from elasticsearch import Elasticsearch
 
+# Tests name validation thoroughly on a number of different cases and makes sure the validator returns the appropriate response based on predetermined criteria. 
+# Each function is a seperate case and is appropriately named to represent what it is trying to test.
 class TestNameValidation(unittest.TestCase):
 	
 	name_regex_for_testing = r'^[^\W0-9_]{2,40}(?:\s[^\W0-9_]*)?\s*[^\W0-9_]{1,40}\s*$'
@@ -50,7 +52,8 @@ class TestNameValidation(unittest.TestCase):
 	def test_full_name_and_whitespace_included(self):
 		self.assertTrue(validator.name_validator("Lakshay Mohanlal Badlani ", self.name_regex_for_testing))
 
-
+# Tests email validation thoroughly on a number of different cases and makes sure the validator returns the appropriate response based on predetermined criteria. 
+# Each function is a seperate case and is appropriately named to represent what it is trying to test.
 class TestEmailValidation(unittest.TestCase):
 	
 	email_regex_for_testing = r"[^@;\\/]+@[^\W0-9@]+\.[^\W0-9@]+"
@@ -100,6 +103,8 @@ class TestEmailValidation(unittest.TestCase):
 	def test_special_characters_in_domain(self):
 		self.assertTrue(validator.email_validator("l.badl_ani@g_mail.com", self.email_regex_for_testing))
 
+# Tests phone number validation thoroughly on a number of different cases and makes sure the validator returns the appropriate response based on predetermined criteria. 
+# Each function is a seperate case and is appropriately named to represent what it is trying to test.
 class TestPhoneNumberValidation(unittest.TestCase):
 	
 	phone_regex_for_testing = r'^\d{9,13}$' 
@@ -140,6 +145,8 @@ class TestPhoneNumberValidation(unittest.TestCase):
 	def test_mix_letters_numbers(self):
 		self.assertFalse(validator.phone_number_validator("5169A6789", self.phone_regex_for_testing))
 
+# Tests phone number validation thoroughly on a number of different cases and makes sure the validator returns the appropriate response based on predetermined criteria. 
+# Each function is a seperate case and is appropriately named to represent what it is trying to test.
 class TestEmailValidation(unittest.TestCase):
 	
 	address_regex_for_testing = r'(\d*)\s*(\w+)\s+((st)|(ave)|(road)|(drive)|(street)|(avenue)+),\s+(\w*),?\s*([A-Z]{2}),\s+(\d{5})$'
@@ -185,7 +192,9 @@ class TestEmailValidation(unittest.TestCase):
 	def test_no_state_name_needed(self):
 		self.assertTrue(validator.address_validator("123 Test St, Berkeley, 94704", self.address_regex_for_testing))
 
-class TestEmailValidation(unittest.TestCase):
+# Tests address validation thoroughly on a number of different cases and makes sure the validator returns the appropriate response based on predetermined criteria. 
+# Each function is a seperate case and is appropriately named to represent what it is trying to test.
+class TestAddressValidation(unittest.TestCase):
 	
 	address_regex_for_testing = r'(\d*)\s*(\w+)\s+((st)|(ave)|(road)|(drive)|(street)|(avenue)+),\s+(\w*),?\s*([A-Z]{2}),\s+(\d{5})$'
 
@@ -230,6 +239,10 @@ class TestEmailValidation(unittest.TestCase):
 	def test_no_state_name_needed(self):
 		self.assertTrue(validator.address_validator("123 Test St, Berkeley, 94704", self.address_regex_for_testing))
 
+
+# Tests logic that handles the logic behind the API calls. Tried to create a dummy elasticstore and update it with information to mimic POST, GET, PUT, DELETE requests. 
+# Tried to test extremes where possible and made sure that input was sanitized appropriately to consolidate functionality of validation functions in the procedure. 
+# Each function is a seperate case and is appropriately named to represent what it is trying to test.
 class TestStorageAndRetrieval(unittest.TestCase):
 	
 		
@@ -254,8 +267,11 @@ class TestStorageAndRetrieval(unittest.TestCase):
 		self.assertFalse(logic_handler.update_record({"name":"Lak78ay Badlani", "email":"l.badlani@gmail.com", "phone_number":"5109904799", "address":"123 test ave, Berkeley, CA, 94704"}, record=logic_handler.contained("Lakshay Badlani", dummy, dummy_index), es_instance= dummy, index = dummy_index, debug = True))
 		self.assertFalse(logic_handler.update_record({"name":"Darcy Anderson", "email":"check1gmail.com", "phone_number":"51099A867", "address":"456 test ave, Berkeley, CA, 94704"}, record=logic_handler.contained("Lakshay Badlani", dummy, dummy_index), es_instance= dummy, index = dummy_index, debug = True))
 
+	def search_query(self):
+		self.assertTrue(logic_handler.search_query(pageSize = 1, page_offset = 0, query = { "query" : { "match_all" : {}}},  es_instance= dummy, index = dummy_index, doc_type = dummy_doc_type, debug = True))
+		self.assertTrue(logic_handler.search_query(pageSize = 1, page_offset = 0, query = { "query" : {"query_string": {"default_field":"email","query":"l.badlani@gmail.com"}}},  es_instance= dummy, index = dummy_index, doc_type = dummy_doc_type, debug = True))
 
-
+# Allows the unit tests to be run from the command line cleanly. 
 if __name__ == '__main__':
 
 	dummy = Elasticsearch([{'host': 'localhost', 'port': 9200}])
